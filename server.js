@@ -27,6 +27,7 @@ app.use('/api/social', require('./routes/social'));
 app.use('/api/partners', require('./routes/partners'));
 app.use('/api/about', require('./routes/about'));
 app.use('/api/payment', require('./routes/payment'));
+app.use('/api/order', require('./routes/order'));
 
 // Error handling middleware
 const errorHandler = require('./middleware/errorHandler');
