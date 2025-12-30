@@ -7,6 +7,7 @@ const teamSchema = new mongoose.Schema({
   image: { type: String, required: true },
   phone: { type: String, default: '' },
   linkedin: { type: String, default: '' },
+  description: { type: String, default: '' },
 }, {
   timestamps: true
 });
