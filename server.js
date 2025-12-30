@@ -26,6 +26,7 @@ app.use('/api/academic', require('./routes/academic'));
 app.use('/api/social', require('./routes/social'));
 app.use('/api/partners', require('./routes/partners'));
 app.use('/api/about', require('./routes/about'));
+app.use('/api/payment', require('./routes/payment'));
 
 // Error handling middleware
 const errorHandler = require('./middleware/errorHandler');
