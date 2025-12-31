@@ -71,21 +71,20 @@ router.delete('/:id', async (req, res) => {
       return res.status(400).json({ error: 'Publication ID is required' });
     }
     
-    console.log('Deleting academic publication with ID:', id);
+    // Deleting academic publication
     
     // Try to delete - findByIdAndDelete handles invalid ObjectIds by returning null
     const publication = await Academic.findByIdAndDelete(id.trim());
     
     if (!publication) {
-      console.log('Publication not found with ID:', id);
+      // Publication not found
       return res.status(404).json({ error: 'Publication not found' });
     }
     
-    console.log('Publication deleted successfully:', publication.title || 'Untitled');
+    // Publication deleted successfully
     res.json({ message: 'Publication deleted successfully' });
   } catch (error) {
-    console.error('Error deleting academic publication:', error);
-    console.error('Error stack:', error.stack);
+    // Error deleting academic publication
     res.status(500).json({ 
       error: error.message || 'Failed to delete publication',
       details: process.env.NODE_ENV === 'development' ? error.stack : undefined
@@ -119,17 +118,16 @@ router.get('/:id/pdf', async (req, res) => {
         const urlMatch = publication.pdfLink.match(/\/v\d+\/(.+)$/);
         if (urlMatch) {
           const publicId = urlMatch[1].replace(/\.pdf$/, '');
-          console.log('Extracted public ID:', publicId);
+          // Extracted public ID
           
           // Try multiple approaches to fetch the PDF
-          console.log('Attempting to fetch PDF with multiple methods...');
           
           const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'dgmexpa8v';
           const https = require('https');
           
           // Method 1: Try the original URL first (should work if PDF delivery is enabled)
           try {
-            console.log('Method 1: Trying original URL...');
+            // Method 1: Trying original URL
             buffer = await new Promise((resolve, reject) => {
               const request = https.get(publication.pdfLink, {
                 headers: {
@@ -141,7 +139,7 @@ router.get('/:id/pdf', async (req, res) => {
                   const chunks = [];
                   response.on('data', (chunk) => chunks.push(chunk));
                   response.on('end', () => {
-                    console.log('PDF downloaded successfully via original URL');
+                    // PDF downloaded successfully
                     resolve(Buffer.concat(chunks));
                   });
                 } else {
@@ -154,20 +152,19 @@ router.get('/:id/pdf', async (req, res) => {
                 reject(new Error('Request timeout'));
               });
             });
-            console.log('Success with original URL!');
+            // Success with original URL
           } catch (method1Error) {
-            console.log('Method 1 failed:', method1Error.message);
+            // Method 1 failed
             
             // Method 2: Try generating a fresh public URL without version
             try {
-              console.log('Method 2: Trying fresh public URL...');
+              // Method 2: Trying fresh public URL
               const freshUrl = cloudinary.url(publicId, {
                 resource_type: 'raw',
                 secure: true,
                 type: 'upload',
                 format: 'pdf'
               });
-              console.log('Fresh URL:', freshUrl);
               
               buffer = await new Promise((resolve, reject) => {
                 const request = https.get(freshUrl, {
@@ -180,7 +177,7 @@ router.get('/:id/pdf', async (req, res) => {
                     const chunks = [];
                     response.on('data', (chunk) => chunks.push(chunk));
                     response.on('end', () => {
-                      console.log('PDF downloaded successfully via fresh URL');
+                      // PDF downloaded successfully
                       resolve(Buffer.concat(chunks));
                     });
                   } else {
@@ -193,14 +190,17 @@ router.get('/:id/pdf', async (req, res) => {
                   reject(new Error('Request timeout'));
                 });
               });
-              console.log('Success with fresh URL!');
+              // Success with fresh URL
             } catch (method2Error) {
-              console.log('Method 2 failed:', method2Error.message);
+              // Method 2 failed
               
               // Method 3: Try using Admin API with authentication
-              console.log('Method 3: Trying Admin API with authentication...');
-              const apiKey = process.env.CLOUDINARY_API_KEY || '577674637224497';
-              const apiSecret = process.env.CLOUDINARY_API_SECRET || '_8Ks_XU3nurQTFUbVA3RxpbcXFE';
+              const apiKey = process.env.CLOUDINARY_API_KEY;
+              const apiSecret = process.env.CLOUDINARY_API_SECRET;
+              
+              if (!apiKey || !apiSecret) {
+                throw new Error('Cloudinary credentials not configured');
+              }
               
               const timestamp = Math.floor(Date.now() / 1000);
               const paramsToSign = {
@@ -236,7 +236,7 @@ router.get('/:id/pdf', async (req, res) => {
                 
                 // Use the secure_url from the resource response
                 const secureUrl = resourceResponse.secure_url || resourceResponse.url;
-                console.log('Got secure URL from Admin API:', secureUrl);
+                // Got secure URL from Admin API
                 
                 buffer = await new Promise((resolve, reject) => {
                   const request = https.get(secureUrl, {
@@ -249,7 +249,7 @@ router.get('/:id/pdf', async (req, res) => {
                       const chunks = [];
                       response.on('data', (chunk) => chunks.push(chunk));
                       response.on('end', () => {
-                        console.log('PDF downloaded successfully via Admin API secure URL');
+                        // PDF downloaded successfully
                         resolve(Buffer.concat(chunks));
                       });
                     } else {
@@ -259,7 +259,7 @@ router.get('/:id/pdf', async (req, res) => {
                   request.on('error', reject);
                 });
               } catch (method3Error) {
-                console.error('All methods failed:', method3Error);
+                // All methods failed
                 throw new Error(`All download methods failed. Last error: ${method3Error.message}. Please verify PDF delivery is enabled in Cloudinary Settings > Security.`);
               }
             }
@@ -294,7 +294,7 @@ router.get('/:id/pdf', async (req, res) => {
         });
       }
     } catch (fetchError) {
-      console.error('Error fetching PDF:', fetchError);
+      // Error fetching PDF
       return res.status(500).json({ 
         error: `Failed to fetch PDF: ${fetchError.message}`,
         url: publication.pdfLink
@@ -320,7 +320,7 @@ router.get('/:id/pdf', async (req, res) => {
     // Send the PDF
     res.send(buffer);
   } catch (error) {
-    console.error('Error serving PDF:', error);
+    // Error serving PDF
     res.status(500).json({ 
       error: error.message || 'Failed to serve PDF',
       details: error.stack

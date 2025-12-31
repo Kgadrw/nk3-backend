@@ -28,19 +28,12 @@ router.get('/:id', async (req, res) => {
 // Create product
 router.post('/', async (req, res) => {
   try {
-    console.log('Shop POST - Received request body:', req.body);
-    console.log('Shop POST - Body keys:', Object.keys(req.body || {}));
-    
     const product = new Shop(req.body);
-    console.log('Shop POST - Created product model:', product);
-    
     await product.save();
-    console.log('Shop POST - Product saved successfully:', product);
-    
     res.status(201).json(product);
   } catch (error) {
-    console.error('Shop POST - Error saving product:', error);
-    res.status(400).json({ error: error.message });
+    console.error('Shop POST - Error saving product');
+    res.status(400).json({ error: 'Failed to save product' });
   }
 });
 
