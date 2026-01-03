@@ -6,6 +6,7 @@ const academicSchema = new mongoose.Schema({
   year: { type: String, required: true },
   description: { type: String, required: true },
   pdfLink: { type: String, default: '' },
+  link: { type: String, default: '' },
 }, {
   timestamps: true
 });
