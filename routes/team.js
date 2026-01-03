@@ -28,10 +28,14 @@ router.get('/:id', async (req, res) => {
 // Create team member
 router.post('/', async (req, res) => {
   try {
+    // Debug: Log incoming data
+    console.log('POST /api/team - Received data:', JSON.stringify(req.body, null, 2));
     const team = new Team(req.body);
     await team.save();
+    console.log('POST /api/team - Saved team:', JSON.stringify(team.toObject(), null, 2));
     res.status(201).json(team);
   } catch (error) {
+    console.error('POST /api/team - Error:', error.message);
     res.status(400).json({ error: error.message });
   }
 });
@@ -39,6 +43,8 @@ router.post('/', async (req, res) => {
 // Update team member
 router.put('/:id', async (req, res) => {
   try {
+    // Debug: Log incoming data
+    console.log(`PUT /api/team/${req.params.id} - Received data:`, JSON.stringify(req.body, null, 2));
     const team = await Team.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -47,8 +53,10 @@ router.put('/:id', async (req, res) => {
     if (!team) {
       return res.status(404).json({ error: 'Team member not found' });
     }
+    console.log(`PUT /api/team/${req.params.id} - Updated team:`, JSON.stringify(team.toObject(), null, 2));
     res.json(team);
   } catch (error) {
+    console.error(`PUT /api/team/${req.params.id} - Error:`, error.message);
     res.status(400).json({ error: error.message });
   }
 });
