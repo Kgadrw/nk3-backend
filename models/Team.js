@@ -8,6 +8,9 @@ const teamSchema = new mongoose.Schema({
   phone: { type: String, default: '' },
   linkedin: { type: String, default: '' },
   description: { type: String, default: '' },
+  experience: { type: String, default: '' },
+  education: { type: String, default: '' },
+  certification: { type: String, default: '' },
 }, {
   timestamps: true
 });
