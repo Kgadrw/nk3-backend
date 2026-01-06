@@ -12,6 +12,7 @@ const portfolioSchema = new mongoose.Schema({
   client: { type: String, default: '' },
   status: { type: String, default: 'Completed' },
   keyFeatures: { type: String, default: '' },
+  designTeam: { type: [String], default: [] },
 }, {
   timestamps: true
 });
