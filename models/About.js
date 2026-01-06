@@ -26,14 +26,11 @@ const aboutSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Static method to get or create about content
+// Static method to get about content (don't auto-create)
 aboutSchema.statics.getAboutContent = async function() {
-  let about = await this.findOne();
-  if (!about) {
-    about = new this({});
-    await about.save();
-  }
-  return about;
+  const about = await this.findOne();
+  // Return empty object if no document exists, don't create one
+  return about || {};
 };
 
 module.exports = mongoose.model('About', aboutSchema);

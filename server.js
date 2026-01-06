@@ -32,6 +32,7 @@ app.use('/api/inquiry', require('./routes/inquiry'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/services', require('./routes/services'));
 app.use('/api/values', require('./routes/values'));
+app.use('/api/hero', require('./routes/hero'));
 
 // Error handling middleware
 const errorHandler = require('./middleware/errorHandler');

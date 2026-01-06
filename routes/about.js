@@ -6,7 +6,38 @@ const About = require('../models/About');
 router.get('/', async (req, res) => {
   try {
     const about = await About.getAboutContent();
-    res.json(about);
+    // Filter out empty string values and only return fields that have actual content
+    const filteredAbout = {};
+    if (about && Object.keys(about).length > 0 && about._id) {
+      // Only process if it's a real document (has _id), not an empty object
+      // List of content fields to check
+      const contentFields = ['title', 'subtitle', 'quote', 'paragraph1', 'paragraph2', 'paragraph3', 
+                            'aboutImage', 'homeHeading', 'homeSubheading', 'homeSince', 
+                            'homeDescription1', 'homeDescription2', 'homeImage', 'aim',
+                            'description1', 'description2', 'projectsCount', 'clientsCount', 'yearsCount'];
+      
+      Object.keys(about).forEach(key => {
+        // Skip MongoDB internal fields
+        if (key !== '_id' && key !== '__v' && key !== 'createdAt' && key !== 'updatedAt') {
+          const value = about[key];
+          // Only include if it's a non-empty string
+          if (typeof value === 'string' && value.trim() !== '') {
+            filteredAbout[key] = value;
+          }
+        }
+      });
+      
+      // Check if any content fields have actual values
+      const hasContent = contentFields.some(field => 
+        filteredAbout[field] && filteredAbout[field].trim() !== ''
+      );
+      
+      // If no content fields have values, return empty object
+      if (!hasContent) {
+        return res.json({});
+      }
+    }
+    res.json(Object.keys(filteredAbout).length > 0 ? filteredAbout : {});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
