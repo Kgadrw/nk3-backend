@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
       // Only process if it's a real document (has _id), not an empty object
       // List of content fields to check
       const contentFields = ['title', 'subtitle', 'quote', 'paragraph1', 'paragraph2', 'paragraph3', 
-                            'aboutImage', 'homeHeading', 'homeSubheading', 'homeSince', 
+                            'aboutImage', 'description', 'homeHeading', 'homeSubheading', 'homeSince', 
                             'homeDescription1', 'homeDescription2', 'homeImage', 'aim',
                             'description1', 'description2', 'projectsCount', 'clientsCount', 'yearsCount'];
       
@@ -64,17 +64,22 @@ router.put('/', async (req, res) => {
   try {
     let about = await About.findOne();
     if (!about) {
+      // Create new document if none exists
       about = new About(req.body);
       await about.save();
+      console.log('Created new about document:', about);
     } else {
+      // Update existing document
       about = await About.findByIdAndUpdate(
         about._id,
         req.body,
         { new: true, runValidators: true }
       );
+      console.log('Updated about document:', about);
     }
     res.json(about);
   } catch (error) {
+    console.error('Error updating about content:', error);
     res.status(400).json({ error: error.message });
   }
 });

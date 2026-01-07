@@ -9,6 +9,7 @@ const aboutSchema = new mongoose.Schema({
   paragraph2: { type: String, default: '' },
   paragraph3: { type: String, default: '' },
   aboutImage: { type: String, default: '' },
+  description: { type: String, default: '' },
   
   // Homepage About Component Content
   homeHeading: { type: String, default: '' },
